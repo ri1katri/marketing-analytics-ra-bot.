@@ -2,8 +2,9 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 import numpy as np
 
+from sklearn.metrics import r2_score, mean_absolute_error
+
 def train_and_predict_leads(df, new_budget):
-    """Обучает модель линейной регрессии и делает прогноз лидов."""
     # Приводим колонки к нижнему регистру 
     df.columns = df.columns.str.lower()
     
@@ -28,6 +29,13 @@ def train_and_predict_leads(df, new_budget):
     model = LinearRegression()
     model.fit(X, y)
 
+    # Оценка точности для презентации
+    y_pred = model.predict(X)
+    print(f"--- ОЦЕНКА ТОЧНОСТИ МОДЕЛИ ---")
+    print(f"R^2 (Коэффициент детерминации): {r2_score(y, y_pred):.2f}")
+    print(f"MAE (Средняя ошибка в лидах): {mean_absolute_error(y, y_pred):.2f}")
+    print(f"------------------------------")
+
     # 3. Вычисляем историческую стоимость клика и показа для оценки новых значений
     avg_cpc = clean_df['cost'].sum() / clean_df['clicks'].sum()
     avg_cpi = clean_df['cost'].sum() / clean_df['impressions'].sum()
@@ -49,4 +57,5 @@ def train_and_predict_leads(df, new_budget):
     # Возвращаем целое число лидов
     return max(0, int(predicted_leads[0]))
 
+   
    
